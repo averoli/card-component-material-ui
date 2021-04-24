@@ -1,5 +1,4 @@
 import {
-    Box,
     Card, CardContent, CardHeader, CardMedia,
     Typography,
     Dialog,
@@ -15,10 +14,9 @@ import CloseIcon from '@material-ui/icons/Close'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
-
 import avatar from './images/IMG_8930.JPG'
 
-import {useState} from "react";
+import React, {useState} from "react";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },
     img: {
         display: 'flex',
-        maxWidth: '100%'
+        maxWidth: '100%',
+        borderRadius: '8px'
     },
     blockLocation: {
         display: 'flex',
@@ -63,11 +62,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) => {
+const CardEdit = ({title, types, country, about: initAbout, onClickSave, editSelect, editCheckbox}) => {
 
     const [isEditing, setEditing] = useState(false)
 
+    const [about, setAbout] = useState(initAbout)
+
     const classes = useStyles()
+
 
     const handleClickEdit = () => {
         setEditing(prevState => !prevState)
@@ -81,7 +83,12 @@ const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) =
             return !prevState
         })
     }
-    console.log(type)
+
+    const handleChange = (e) => {
+        setAbout(e.target.value)
+    }
+
+
     return (
         <Card className='mb-4'>
             <CardHeader
@@ -114,26 +121,26 @@ const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) =
                                 <Grid item spacing={1}>
                                     <div className={classes.blockLocation}>
                                         <div><LocationOnIcon className={classes.location}/></div>
-                                        <div><Typography style={{color: '#BABADE'}} gutterBottom>
+                                        <div><Typography style={{color: '#BABADE'}}>
                                             {country}
                                         </Typography></div>
                                     </div>
                                 </Grid>
                             </Grid>
-                            <Typography variant="h5" style={{color: '#2E2545'}} gutterBottom>
+                            <Typography variant="h6" style={{color: '#2E2545', fontWeight: 'bolder'}}>
                                 {title}
                             </Typography>
                             <div>
-                                {type.map((type, index) =>
-                                        <Typography variant="body2" component="span" gutterBottom>
-                                            {type || '-'}
-                                            {index < type.length - 1 ? ', ' : '.'}
-                                        </Typography>
+                                {types.map((type, index) =>
+                                    <Typography variant="body2" component="span" gutterBottom>
+                                        {type || '-'}
+                                        {index < types.length - 1 ? ', ' : '.'}
+                                    </Typography>
                                 )}
                             </div>
                         </Grid>
                         <Typography variant="body2" style={{color: '#676796'}}>
-                            {children}
+                            {about}
                         </Typography>
                         {isEditing &&
                         (<Dialog open={isEditing} onClose={handleClickEdit} aria-labelledby="form-dialog-title"
@@ -175,15 +182,7 @@ const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) =
                                                 />
                                             </FormControl>
                                             <FormControl className={classes.formControl}>
-                                                <TextField
-                                                    id="outlined-select-currency"
-                                                    select
-                                                    label="HQ Country"
-                                                    helperText="Where is your fund's or company's headquarters is located?"
-                                                    variant="outlined"
-                                                    size="small"
-                                                >
-                                                </TextField>
+                                                    {editSelect}
                                             </FormControl>
 
                                             <DialogContentText className={classes.checkbox}>
@@ -203,6 +202,8 @@ const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) =
                                                     rows={8}
                                                     helperText="Tell us a bit more about yourself and your company, presenting your main fields of activity,
                       investment focus and what kind of startups you are looking for."
+                                                    onChange={handleChange}
+                                                    value={about}
                                                 />
                                             </FormControl>
                                         </form>
@@ -223,8 +224,6 @@ const CardEdit = ({title, type, country, children, onClickSave, editCheckbox}) =
                         </Dialog>)
                         }
                     </Grid>
-
-
                 </Grid>
             </CardContent>
         </Card>

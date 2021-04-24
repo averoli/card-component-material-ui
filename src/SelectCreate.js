@@ -1,51 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     MenuItem,
-    Select
+    TextField
 } from '@material-ui/core'
-import makeStyles from '@material-ui/core/styles/makeStyles'
-import Input from '@material-ui/core/Input'
-import Chip from '@material-ui/core/Chip'
+
+import countryList from "country-list";
 
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    chips: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    chip: {
-        margin: 2,
-    },
-}))
+const SelectCreate = (onChange) => {
 
-const SelectCreate = ({ data, defaultSelected, onChange }) => {
+    const [countries, setCountries] = useState([])
 
-    const classes = useStyles()
-
-    const [select, setSelect] = useState([])
-
-    const [state, setState] = useState(() => {
-
-        return data.reduce((acc, item) => {
-            acc[item] = { value: item, label: item}
-            return acc
-        }, {})
-    })
+    const [list, setList] = useState({})
 
     useEffect(() => {
-        onChange && onChange(state)
-    }, [state])
+        setList(countryList.getCodeList())
+    }, [])
+
+    useEffect(()=>{
+        setCountries(() => Object.entries(list))
+    },[list])
+
+    const [select, setSelect] = useState(' ')
+
 
     const handleChange = (val) => {
-        setSelect(val.target.value)
+        setSelect(val.target.value);
+        // onChange && onChange({
+        //     code: val.target.value,
+        //     country: list[val.target.value]
+        // })
         // setState(prevState => {
         //   const copyState = {
         //     ...prevState,
@@ -60,28 +44,29 @@ const SelectCreate = ({ data, defaultSelected, onChange }) => {
 
 
     return (
-        <Select
+        <TextField
+            id="outlined-select-currency"
+            select
+            label="HQ Country"
+            helperText="Where is your fund's or company's headquarters is located?"
+            variant="outlined"
+            size="small"
             value={select}
             onChange={handleChange}
-            multiple
-            input={<Input />}
-            renderValue={(selected) => (
-                <div className={classes.chips}>
-                    {selected.map((value) => (
-                        <Chip key={value} label={value} className={classes.chip} />
-                    ))}
-                </div>
-            )}
-
         >
-            {Object.values(state).map((item, index)=>
-                <MenuItem
-                    key={index}
-                    value={item.value}
-                >
-                    {item.label}
-                </MenuItem>)}
-        </Select>
+            {countries.map(item => {
+                return (
+                    <MenuItem
+                        key={item[0]}
+                        value={item[0]}
+                        name={item[1]}
+                    >
+                        {item[1]}
+                    </MenuItem>
+                )
+            })}
+        </TextField>
+
     )
 }
 
